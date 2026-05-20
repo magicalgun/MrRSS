@@ -135,9 +135,7 @@ function toggleActivityBar() {
     class="compact-sidebar-wrapper flex h-full relative"
     :class="{ 'width-collapsed': isActivityBarCollapsed }"
   >
-    <!-- Shared container for ActivityBar and Edge Toggle -->
-    <div class="sidebar-toggle-container">
-    <!-- Hover zone for edge trigger (visible when ActivityBar is collapsed) -->
+    <!-- Hover zone for edge trigger (outside container, covers left screen edge) -->
     <div
       v-if="isActivityBarCollapsed && !isFeedListPinned"
       class="edge-hover-zone"
@@ -145,17 +143,19 @@ function toggleActivityBar() {
       @mouseleave="handleEdgeMouseLeave"
     ></div>
 
-    <!-- Edge Toggle Button (visible when ActivityBar is collapsed) -->
-    <Transition name="edge-toggle-fade">
-      <button
-        v-if="isActivityBarCollapsed && !isHoveringEdge"
-        class="edge-toggle-button flex items-center justify-center text-text-secondary hover:text-accent hover:bg-bg-secondary transition-all"
-        :title="t('sidebar.activity.expandActivityBar')"
-        @click="toggleActivityBar"
-      >
-        <PhCaretRight :size="20" weight="regular" />
-      </button>
-    </Transition>
+    <!-- Shared container for ActivityBar and Edge Toggle -->
+    <div class="sidebar-toggle-container">
+      <!-- Edge Toggle Button (visible when ActivityBar is collapsed) -->
+      <Transition name="edge-toggle-fade">
+        <button
+          v-if="isActivityBarCollapsed && !isHoveringEdge"
+          class="edge-toggle-button flex items-center justify-center text-text-secondary hover:text-accent hover:bg-bg-secondary transition-all"
+          :title="t('sidebar.activity.expandActivityBar')"
+          @click="toggleActivityBar"
+        >
+          <PhCaretRight :size="20" weight="regular" />
+        </button>
+      </Transition>
 
       <!-- Smart Activity Bar (Left) -->
       <ActivityBar
@@ -269,14 +269,14 @@ function toggleActivityBar() {
   opacity: 1;
 }
 
-/* Edge hover zone - invisible trigger area */
+/* Edge hover zone - invisible trigger area at left screen edge */
 .edge-hover-zone {
   position: absolute;
   left: 0;
   top: 0;
-  width: 30px;
+  width: 40px;
   height: 100%;
-  z-index: 15;
+  z-index: 25;
   cursor: pointer;
 }
 
