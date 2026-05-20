@@ -263,6 +263,32 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
+      - name: Build application (Windows)
+        if: steps.check_artifacts.outputs.skip_build == 'false' && matrix.platform == 'windows'
+        shell: pwsh
+        env:
+          CGO_ENABLED: 1
+          ARCH: ${{ matrix.arch }}
+        run: |
+          # Build frontend directly
+          cd frontend
+          npm run build
+          cd ..
+
+          # Generate bindings
+          wails3 generate bindings
+
+          # Build Go application
+          go build -tags production -trimpath -buildvcs=false -ldflags="-w -s -H windowsgui" -o build/bin/MrRSS.exe
+
+          # Verify the build
+          if (-not (Test-Path "build/bin/MrRSS.exe")) {
+            Write-Error "Binary not created"
+            exit 1
+          }
+
+          Write-Host "Binary built successfully for ${{ matrix.arch }}"
+
       - name: Create installer (Windows)
         if: steps.check_artifacts.outputs.skip_build == 'false' && matrix.platform == 'windows'
         run: |
