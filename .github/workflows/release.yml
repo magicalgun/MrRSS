@@ -271,7 +271,7 @@ jobs:
           ARCH: ${{ matrix.arch }}
         run: |
           # Build using wails3 which handles icon embedding and frontend build
-          wails3 build -platform windows/amd64 -clean
+          wails3 build
           if ($LASTEXITCODE -ne 0) {
             Write-Error "Wails build failed"
             exit 1
