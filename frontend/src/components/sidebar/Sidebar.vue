@@ -41,6 +41,13 @@ function handleActivityBarReady(state: { expanded: boolean; pinned: boolean }) {
 onMounted(async () => {
   await nextTick();
 
+  // Listen for edge hover event from App.vue
+  window.addEventListener('expand-feed-list', () => {
+    if (isActivityBarCollapsed.value && !isFeedListPinned.value) {
+      handleFeedListExpand();
+    }
+  });
+
   // Fallback: if ready event doesn't fire, try reading state after delay
   setTimeout(() => {
     if (activityBarRef.value) {
@@ -104,29 +111,15 @@ function updateActivityBarState() {
 const emitShowAddFeed = () => window.dispatchEvent(new CustomEvent('show-add-feed'));
 const emitShowSettings = () => window.dispatchEvent(new CustomEvent('show-settings'));
 
-// Hover state for edge trigger
-const isHoveringEdge = ref(false);
-let hoverTimeout: ReturnType<typeof setTimeout> | null = null;
-
-// Handle edge hover to show feed list
-function handleEdgeMouseEnter() {
-  if (isActivityBarCollapsed.value && !isFeedListPinned.value) {
-    hoverTimeout = setTimeout(() => {
-      handleFeedListExpand();
-    }, 200);
-  }
-}
-
-function handleEdgeMouseLeave() {
-  if (hoverTimeout) {
-    clearTimeout(hoverTimeout);
-    hoverTimeout = null;
-  }
-}
-
 function toggleActivityBar() {
   isActivityBarCollapsed.value = !isActivityBarCollapsed.value;
   saveActivityBarState();
+  // Notify App.vue of activity bar state change
+  window.dispatchEvent(
+    new CustomEvent('feed-list-pin-state-changed', {
+      detail: { isPinned: isFeedListPinned.value, isActivityBarCollapsed: isActivityBarCollapsed.value },
+    })
+  );
 }
 </script>
 
@@ -135,14 +128,6 @@ function toggleActivityBar() {
     class="compact-sidebar-wrapper flex h-full relative"
     :class="{ 'width-collapsed': isActivityBarCollapsed }"
   >
-    <!-- Hover zone for edge trigger (outside container, covers left screen edge) -->
-    <div
-      v-if="isActivityBarCollapsed && !isFeedListPinned"
-      class="edge-hover-zone"
-      @mouseenter="handleEdgeMouseEnter"
-      @mouseleave="handleEdgeMouseLeave"
-    ></div>
-
     <!-- Shared container for ActivityBar and Edge Toggle -->
     <div class="sidebar-toggle-container">
       <!-- Edge Toggle Button (visible when ActivityBar is collapsed) -->
@@ -267,17 +252,6 @@ function toggleActivityBar() {
 .edge-toggle-fade-enter-to,
 .edge-toggle-fade-leave-from {
   opacity: 1;
-}
-
-/* Edge hover zone - fixed to left screen edge for reliable hover detection */
-.edge-hover-zone {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 40px;
-  height: 100vh;
-  z-index: 25;
-  cursor: pointer;
 }
 
 /* Smaller screens (laptops, tablets) */

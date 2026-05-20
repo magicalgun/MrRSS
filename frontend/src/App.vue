@@ -64,13 +64,40 @@ const {
 // Feed list pin state for layout adjustment
 const isFeedListPinned = ref(false);
 
+// Activity bar collapsed state
+const isActivityBarCollapsed = ref(false);
+
+// Edge hover timeout
+let edgeHoverTimeout: ReturnType<typeof setTimeout> | null = null;
+
 // Listen for feed list pin state changes
 onMounted(() => {
   window.addEventListener('feed-list-pin-state-changed', (e) => {
-    const customEvent = e as CustomEvent<{ isPinned: boolean }>;
+    const customEvent = e as CustomEvent<{ isPinned: boolean; isActivityBarCollapsed?: boolean }>;
     isFeedListPinned.value = customEvent.detail.isPinned;
+    if (customEvent.detail.isActivityBarCollapsed !== undefined) {
+      isActivityBarCollapsed.value = customEvent.detail.isActivityBarCollapsed;
+    }
   });
 });
+
+// Edge hover handlers - dispatch event to Sidebar to expand feed list
+function handleEdgeHoverEnter() {
+  if (edgeHoverTimeout) {
+    clearTimeout(edgeHoverTimeout);
+    edgeHoverTimeout = null;
+  }
+  edgeHoverTimeout = setTimeout(() => {
+    window.dispatchEvent(new CustomEvent('expand-feed-list'));
+  }, 200);
+}
+
+function handleEdgeHoverLeave() {
+  if (edgeHoverTimeout) {
+    clearTimeout(edgeHoverTimeout);
+    edgeHoverTimeout = null;
+  }
+}
 
 // Use app updates composable
 const {
@@ -303,6 +330,14 @@ function onFeedUpdated(): void {
       '--feed-drawer-offset': isFeedListPinned ? '280px' : '0px',
     }"
   >
+    <!-- Edge hover zone - fixed to screen left edge, shows feed list on hover -->
+    <div
+      v-if="isActivityBarCollapsed && !isFeedListPinned"
+      class="edge-hover-zone"
+      @mouseenter="handleEdgeHoverEnter"
+      @mouseleave="handleEdgeHoverLeave"
+    ></div>
+
     <Sidebar :is-open="isSidebarOpen" @toggle="toggleSidebar" />
 
     <!-- Show ImageGalleryView when in image gallery mode -->
@@ -452,5 +487,17 @@ function onFeedUpdated(): void {
 .resizer:active {
   background-color: var(--color-accent, #3b82f6);
 }
+
+/* Edge hover zone - fixed to screen left edge */
+.edge-hover-zone {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 40px;
+  height: 100vh;
+  z-index: 25;
+  cursor: pointer;
+}
+
 /* Global styles if needed */
 </style>
