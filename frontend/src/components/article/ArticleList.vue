@@ -1059,9 +1059,13 @@ async function markAllVisibleAsRead(): Promise<void> {
 </template>
 
 <style scoped>
+@reference "../../style.css";
+
 @media (min-width: 768px) {
   .article-list {
     width: var(--article-list-width, 400px);
+    margin-left: var(--feed-drawer-offset, 0px);
+    transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
