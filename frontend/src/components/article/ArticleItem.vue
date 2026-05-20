@@ -357,14 +357,6 @@ onUnmounted(() => {
             weight="fill"
           />
           <PhStar v-if="article.is_favorite" :size="16" class="text-yellow-500" weight="fill" />
-          <!-- FreshRSS indicator -->
-          <img
-            v-if="article.freshrss_item_id"
-            src="/assets/plugin_icons/freshrss.svg"
-            class="w-4 h-4 shrink-0"
-            :title="t('setting.freshrss.syncedFeed')"
-            alt="FreshRSS"
-          />
           <!-- RSSHub indicator -->
           <img
             v-if="isRSSHubArticle"
@@ -408,14 +400,6 @@ onUnmounted(() => {
               class="text-yellow-500 sm:w-[18px] sm:h-[18px]"
               weight="fill"
             />
-            <!-- FreshRSS indicator -->
-            <img
-              v-if="article.freshrss_item_id"
-              src="/assets/plugin_icons/freshrss.svg"
-              class="w-3.5 h-3.5 shrink-0 sm:w-4 sm:h-4"
-              :title="t('setting.freshrss.syncedFeed')"
-              alt="FreshRSS"
-            />
             <!-- RSSHub indicator -->
             <img
               v-if="isRSSHubArticle"
@@ -433,6 +417,8 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+@reference "../../style.css";
+
 .article-card {
   @apply py-2 px-1.5 sm:p-3 border-b border-border cursor-pointer transition-colors flex gap-2 sm:gap-3 relative border-l-2 sm:border-l-[3px] border-l-transparent;
 }
