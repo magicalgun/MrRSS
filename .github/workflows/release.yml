@@ -270,16 +270,31 @@ jobs:
           CGO_ENABLED: 1
           ARCH: ${{ matrix.arch }}
         run: |
-          # Build frontend directly
+          # Ensure output directory exists
+          New-Item -ItemType Directory -Force -Path "build/bin" | Out-Null
+
+          # Build frontend
           cd frontend
           npm run build
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Frontend build failed"
+            exit 1
+          }
           cd ..
 
           # Generate bindings
           wails3 generate bindings
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Bindings generation failed"
+            exit 1
+          }
 
           # Build Go application
           go build -tags production -trimpath -buildvcs=false -ldflags="-w -s -H windowsgui" -o build/bin/MrRSS.exe
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Go build failed"
+            exit 1
+          }
 
           # Verify the build
           if (-not (Test-Path "build/bin/MrRSS.exe")) {
