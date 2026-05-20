@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { PhFolder, PhFolderDashed, PhCaretDown } from '@phosphor-icons/vue';
-import { useI18n } from 'vue-i18n';
 import type { Feed } from '@/types/models';
 import type { DropPreview } from '@/composables/ui/useDragDrop';
 import SidebarFeed from './SidebarFeed.vue';
-
-const { t } = useI18n();
 
 // Track click timeout to distinguish single click from double click
 const clickTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
@@ -162,16 +159,6 @@ const checkIsOpen = (path: string) => {
   }
   return false;
 };
-
-// Check if this category is exclusively for FreshRSS feeds
-// Only show the icon if ALL feeds in this category are from FreshRSS
-const isFreshRSSCategory = computed(() => {
-  if (!props.feeds || props.feeds.length === 0) {
-    return false;
-  }
-  // Only show FreshRSS icon if ALL feeds in this category are FreshRSS sources
-  return props.feeds.every((feed) => feed.is_freshrss_source);
-});
 
 // Handle category header click - delays to distinguish from double click
 function handleCategoryClick() {
