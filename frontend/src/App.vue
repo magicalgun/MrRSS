@@ -61,6 +61,17 @@ const {
   setCompactMode,
 } = useResizablePanels();
 
+// Feed list pin state for layout adjustment
+const isFeedListPinned = ref(false);
+
+// Listen for feed list pin state changes
+onMounted(() => {
+  window.addEventListener('feed-list-pin-state-changed', (e) => {
+    const customEvent = e as CustomEvent<{ isPinned: boolean }>;
+    isFeedListPinned.value = customEvent.detail.isPinned;
+  });
+});
+
 // Use app updates composable
 const {
   updateInfo,
@@ -289,6 +300,7 @@ function onFeedUpdated(): void {
     :style="{
       '--sidebar-width': sidebarWidth + 'px',
       '--article-list-width': articleListWidth + 'px',
+      '--feed-drawer-offset': isFeedListPinned ? '280px' : '0px',
     }"
   >
     <Sidebar :is-open="isSidebarOpen" @toggle="toggleSidebar" />
