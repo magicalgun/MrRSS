@@ -124,50 +124,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Desktop platforms - always build
-          # Linux AMD64 build
-          - os: ubuntu-24.04
-            platform: linux
-            arch: amd64
-            ext: ''
-            build_condition: 'true'
-          # Linux ARM64 build - using native ARM64 runner
-          - os: ubuntu-24.04-arm
-            platform: linux
-            arch: arm64
-            ext: ''
-            build_condition: 'true'
-          # Windows AMD64 build
+          # Windows AMD64 build only
           - os: windows-latest
             platform: windows
             arch: amd64
             ext: '.exe'
             build_condition: 'true'
-          # Windows ARM64 build - using native ARM64 runner
-          - os: windows-11-arm
-            platform: windows
-            arch: arm64
-            ext: '.exe'
-            build_condition: 'true'
-          # macOS Universal build (includes both Intel and Apple Silicon)
-          - os: macos-latest
-            platform: darwin
-            arch: universal
-            ext: '.app'
-            build_condition: 'true'
-
-          # Mobile platforms - only for Wails v3 (commented out by default)
-          # Uncomment these when you want to build mobile versions
-          # - os: macos-latest
-          #   platform: ios
-          #   arch: arm64
-          #   ext: '.ipa'
-          #   build_condition: 'wails_v3_only'
-          # - os: ubuntu-24.04
-          #   platform: android
-          #   arch: arm64
-          #   ext: '.apk'
-          #   build_condition: 'wails_v3_only'
 
     steps:
       - uses: actions/checkout@v6
@@ -291,13 +253,6 @@ jobs:
           choco install mingw nsis -y
         shell: pwsh
 
-      - name: Install Windows dependencies (ARM64)
-        if: steps.check_artifacts.outputs.skip_build == 'false' && matrix.platform == 'windows' && matrix.arch == 'arm64'
-        run: |
-          choco install mingw nsis -y
-          # MinGW is required for CGO
-        shell: pwsh
-
       - name: Install Wails CLI
         if: steps.check_artifacts.outputs.skip_build == 'false'
         shell: bash
@@ -307,53 +262,6 @@ jobs:
         if: steps.check_artifacts.outputs.skip_build == 'false'
         working-directory: ./frontend
         run: npm ci
-
-      - name: Build application (Linux)
-        if: steps.check_artifacts.outputs.skip_build == 'false' && matrix.platform == 'linux'
-        env:
-          CGO_ENABLED: 1
-          ARCH: ${{ matrix.arch }}
-        run: |
-          # wails3 build via Taskfile automatically handles frontend build
-          task linux:build
-
-          # Verify the build
-          if [ ! -f "build/bin/MrRSS" ]; then
-            echo "Error: Binary not found"
-            exit 1
-          fi
-
-          # Check architecture
-          file build/bin/MrRSS
-          echo "Binary built successfully for ${{ matrix.arch }}"
-
-      - name: Build application (Windows)
-        if: steps.check_artifacts.outputs.skip_build == 'false' && matrix.platform == 'windows'
-        shell: pwsh
-        env:
-          CGO_ENABLED: 1
-          ARCH: ${{ matrix.arch }}
-        run: |
-          # wails3 build via Taskfile automatically handles frontend build
-          task windows:build
-
-          # Verify the build
-          if (-not (Test-Path "build/bin/MrRSS.exe")) {
-            Write-Error "Binary not created"
-            exit 1
-          }
-
-          Write-Host "Binary built successfully for ${{ matrix.arch }}"
-
-      - name: Build application (macOS)
-        if: steps.check_artifacts.outputs.skip_build == 'false' && matrix.platform == 'darwin'
-        env:
-          CGO_ENABLED: 1
-          ARCH: ${{ matrix.arch }}
-        run: |
-          # macOS runners can build universal binaries natively
-          # wails3 build via Taskfile automatically handles frontend build
-          task darwin:build
 
       - name: Create installer (Windows)
         if: steps.check_artifacts.outputs.skip_build == 'false' && matrix.platform == 'windows'
@@ -442,113 +350,6 @@ jobs:
 
           Write-Host "Created portable package: $zipName"
         shell: pwsh
-
-      - name: Create installer (Linux)
-        if: steps.check_artifacts.outputs.skip_build == 'false' && matrix.platform == 'linux'
-        run: |
-          # Clean up any cached appimagetool to ensure correct architecture is downloaded
-          rm -f build/appimagetool-*.AppImage
-
-          # Debug: Show system architecture info
-          echo "System architecture: $(uname -m)"
-          echo "Target architecture: ${{ matrix.arch }}"
-
-          # Debug: Verify binary architecture
-          echo "Binary architecture check:"
-          file build/bin/MrRSS || true
-
-          chmod +x build/linux/create-appimage.sh
-          ARCH=${{ matrix.arch }} ./build/linux/create-appimage.sh || echo "AppImage creation failed, will use tar.gz"
-        continue-on-error: true
-
-      - name: Create installer (macOS)
-        if: steps.check_artifacts.outputs.skip_build == 'false' && matrix.platform == 'darwin'
-        run: |
-          chmod +x build/darwin/create-dmg.sh
-          ./build/darwin/create-dmg.sh
-        continue-on-error: true
-
-      - name: Create portable package (macOS)
-        if: steps.check_artifacts.outputs.skip_build == 'false' && matrix.platform == 'darwin'
-        run: |
-          VERSION="${{ needs.create-release.outputs.version }}"
-          ARCH="${{ matrix.arch }}"
-          PORTABLE_DIR="build/portable-temp"
-
-          # Create portable directory structure
-          mkdir -p "$PORTABLE_DIR"
-
-          # Copy .app bundle
-          cp -R build/bin/MrRSS.app "$PORTABLE_DIR/"
-
-          # Create portable.txt marker
-          touch "$PORTABLE_DIR/portable.txt"
-
-          # Create README for portable version
-          cat > "$PORTABLE_DIR/README.txt" << 'EOF'
-          MrRSS Portable Edition
-
-          This is the portable version of MrRSS. All data will be stored in the 'data' folder
-          next to the MrRSS.app.
-
-          To run: Double-click MrRSS.app
-
-          For more information, visit: https://github.com/WCY-dt/MrRSS
-          EOF
-
-          # Create zip file
-          cd "$PORTABLE_DIR"
-          zip -r "../bin/MrRSS-${VERSION}-darwin-${ARCH}-portable.zip" *
-          cd ../..
-
-          echo "Created portable package: MrRSS-${VERSION}-darwin-${ARCH}-portable.zip"
-
-      - name: Package application (Linux - tar.gz fallback)
-        if: steps.check_artifacts.outputs.skip_build == 'false' && matrix.platform == 'linux'
-        run: |
-          cd build/bin
-          if [ -f "MrRSS" ]; then
-            tar -czf MrRSS-${{ needs.create-release.outputs.version }}-linux-${{ matrix.arch }}.tar.gz MrRSS
-          else
-            echo "Error: MrRSS binary not found"
-            exit 1
-          fi
-
-      - name: Create portable package (Linux)
-        if: steps.check_artifacts.outputs.skip_build == 'false' && matrix.platform == 'linux'
-        run: |
-          VERSION="${{ needs.create-release.outputs.version }}"
-          ARCH="${{ matrix.arch }}"
-          PORTABLE_DIR="build/portable-temp"
-
-          # Create portable directory structure
-          mkdir -p "$PORTABLE_DIR"
-
-          # Copy executable
-          cp build/bin/MrRSS "$PORTABLE_DIR/"
-          chmod +x "$PORTABLE_DIR/MrRSS"
-
-          # Create portable.txt marker
-          touch "$PORTABLE_DIR/portable.txt"
-
-          # Create README for portable version
-          cat > "$PORTABLE_DIR/README.txt" << 'EOF'
-          MrRSS Portable Edition
-
-          This is the portable version of MrRSS. All data will be stored in the 'data' folder
-          next to this executable.
-
-          To run: ./MrRSS
-
-          For more information, visit: https://github.com/WCY-dt/MrRSS
-          EOF
-
-          # Create tar.gz file
-          cd "$PORTABLE_DIR"
-          tar -czf "../bin/MrRSS-${VERSION}-linux-${ARCH}-portable.tar.gz" *
-          cd ../..
-
-          echo "Created portable package: MrRSS-${VERSION}-linux-${ARCH}-portable.tar.gz"
 
       - name: Collect artifacts
         if: steps.check_artifacts.outputs.skip_build == 'false'
