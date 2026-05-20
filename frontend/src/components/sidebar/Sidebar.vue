@@ -93,10 +93,36 @@ function updateActivityBarState() {
       isFeedListPinned.value
     );
   }
+  // Notify App.vue of pin state change for article list layout adjustment
+  window.dispatchEvent(
+    new CustomEvent('feed-list-pin-state-changed', {
+      detail: { isPinned: isFeedListPinned.value },
+    })
+  );
 }
 
 const emitShowAddFeed = () => window.dispatchEvent(new CustomEvent('show-add-feed'));
 const emitShowSettings = () => window.dispatchEvent(new CustomEvent('show-settings'));
+
+// Hover state for edge trigger
+const isHoveringEdge = ref(false);
+let hoverTimeout: ReturnType<typeof setTimeout> | null = null;
+
+// Handle edge hover to show feed list
+function handleEdgeMouseEnter() {
+  if (isActivityBarCollapsed.value && !isFeedListPinned.value) {
+    hoverTimeout = setTimeout(() => {
+      handleFeedListExpand();
+    }, 200);
+  }
+}
+
+function handleEdgeMouseLeave() {
+  if (hoverTimeout) {
+    clearTimeout(hoverTimeout);
+    hoverTimeout = null;
+  }
+}
 
 function toggleActivityBar() {
   isActivityBarCollapsed.value = !isActivityBarCollapsed.value;
@@ -111,17 +137,25 @@ function toggleActivityBar() {
   >
     <!-- Shared container for ActivityBar and Edge Toggle -->
     <div class="sidebar-toggle-container">
-      <!-- Edge Toggle Button (visible when ActivityBar is collapsed) -->
-      <Transition name="edge-toggle-fade">
-        <button
-          v-if="isActivityBarCollapsed"
-          class="edge-toggle-button flex items-center justify-center text-text-secondary hover:text-accent hover:bg-bg-secondary transition-all"
-          :title="t('sidebar.activity.expandActivityBar')"
-          @click="toggleActivityBar"
-        >
-          <PhCaretRight :size="20" weight="regular" />
-        </button>
-      </Transition>
+    <!-- Hover zone for edge trigger (visible when ActivityBar is collapsed) -->
+    <div
+      v-if="isActivityBarCollapsed && !isFeedListPinned"
+      class="edge-hover-zone"
+      @mouseenter="handleEdgeMouseEnter"
+      @mouseleave="handleEdgeMouseLeave"
+    ></div>
+
+    <!-- Edge Toggle Button (visible when ActivityBar is collapsed) -->
+    <Transition name="edge-toggle-fade">
+      <button
+        v-if="isActivityBarCollapsed && !isHoveringEdge"
+        class="edge-toggle-button flex items-center justify-center text-text-secondary hover:text-accent hover:bg-bg-secondary transition-all"
+        :title="t('sidebar.activity.expandActivityBar')"
+        @click="toggleActivityBar"
+      >
+        <PhCaretRight :size="20" weight="regular" />
+      </button>
+    </Transition>
 
       <!-- Smart Activity Bar (Left) -->
       <ActivityBar
@@ -168,6 +202,8 @@ function toggleActivityBar() {
 </template>
 
 <style scoped>
+@reference "../../style.css";
+
 .compact-sidebar-wrapper {
   position: relative;
   z-index: 20;
@@ -231,6 +267,17 @@ function toggleActivityBar() {
 .edge-toggle-fade-enter-to,
 .edge-toggle-fade-leave-from {
   opacity: 1;
+}
+
+/* Edge hover zone - invisible trigger area */
+.edge-hover-zone {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 100%;
+  z-index: 15;
+  cursor: pointer;
 }
 
 /* Smaller screens (laptops, tablets) */
