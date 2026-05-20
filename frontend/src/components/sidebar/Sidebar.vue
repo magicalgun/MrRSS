@@ -269,13 +269,13 @@ function toggleActivityBar() {
   opacity: 1;
 }
 
-/* Edge hover zone - invisible trigger area at left screen edge */
+/* Edge hover zone - fixed to left screen edge for reliable hover detection */
 .edge-hover-zone {
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   width: 40px;
-  height: 100%;
+  height: 100vh;
   z-index: 25;
   cursor: pointer;
 }
