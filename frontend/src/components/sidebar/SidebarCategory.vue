@@ -230,15 +230,6 @@ function handleCaretClick() {
         <PhFolderDashed v-if="isUncategorized" :size="20" />
         <PhFolder v-else :size="20" :weight="'fill'" />
         {{ name }}
-        <!-- FreshRSS indicator on category -->
-        <!-- Only show if ALL feeds in this category are from FreshRSS -->
-        <img
-          v-if="isFreshRSSCategory"
-          src="/assets/plugin_icons/freshrss.svg"
-          class="w-3.5 h-3.5 shrink-0"
-          :title="t('setting.freshrss.syncedFeed')"
-          alt="FreshRSS"
-        />
       </span>
       <span v-if="unreadCount > 0" class="unread-badge mr-1">{{ unreadCount }}</span>
       <PhCaretDown
@@ -336,6 +327,8 @@ function handleCaretClick() {
 </template>
 
 <style scoped>
+@reference "../../style.css";
+
 .category-header {
   @apply px-2 sm:px-3 py-1.5 sm:py-2 cursor-pointer font-semibold text-xs sm:text-sm text-text-secondary flex items-center justify-between hover:bg-bg-tertiary hover:text-text-primary transition-colors;
   @apply sticky z-10 bg-bg-secondary;
