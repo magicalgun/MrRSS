@@ -18,7 +18,8 @@ import {
   PhTag,
   PhWarningCircle,
 } from '@phosphor-icons/vue';
-import freshrssIcon from '/assets/plugin_icons/freshrss.svg?url';
+import FreshRSSIcon from '@/components/icons/FreshRSSIcon.vue';
+import RSSHubIcon from '@/components/icons/RSSHubIcon.vue';
 import type { Feed } from '@/types/models';
 import { formatRelativeTime } from '@/utils/date';
 import { SettingGroup, ButtonControl } from '@/components/settings';
@@ -547,19 +548,15 @@ function handleManageTags() {
             >
               <span class="truncate" :title="feed.title">{{ feed.title }}</span>
               <!-- Feed Type Indicators -->
-              <img
+              <FreshRSSIcon
                 v-if="feed.is_freshrss_source"
-                :src="freshrssIcon"
                 class="w-4 h-4 sm:w-4 sm:h-4 shrink-0 inline"
                 :title="t('setting.freshrss.syncedFeed')"
-                alt="FreshRSS"
               />
-              <img
+              <RSSHubIcon
                 v-if="isRSSHubFeed(feed)"
-                src="/assets/plugin_icons/rsshub.svg"
                 class="w-4 h-4 sm:w-4 sm:h-4 shrink-0 inline"
                 :title="t('setting.rsshub.feed')"
-                alt="RSSHub"
               />
               <PhImage
                 v-if="feed.is_image_mode"

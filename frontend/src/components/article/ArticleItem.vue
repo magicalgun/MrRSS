@@ -9,6 +9,7 @@ import { useShowPreviewImages } from '@/composables/ui/useShowPreviewImages';
 import { useAppStore } from '@/stores/app';
 import { useSettings } from '@/composables/core/useSettings';
 import { imageCache } from '@/utils/imageCache';
+import RSSHubIcon from '@/components/icons/RSSHubIcon.vue';
 
 interface Props {
   article: Article;
@@ -358,12 +359,10 @@ onUnmounted(() => {
           />
           <PhStar v-if="article.is_favorite" :size="16" class="text-yellow-500" weight="fill" />
           <!-- RSSHub indicator -->
-          <img
+          <RSSHubIcon
             v-if="isRSSHubArticle"
-            src="/assets/plugin_icons/rsshub.svg"
             class="w-4 h-4 shrink-0"
             :title="t('setting.rsshub.feed')"
-            alt="RSSHub"
           />
         </div>
       </div>
@@ -401,12 +400,10 @@ onUnmounted(() => {
               weight="fill"
             />
             <!-- RSSHub indicator -->
-            <img
+            <RSSHubIcon
               v-if="isRSSHubArticle"
-              src="/assets/plugin_icons/rsshub.svg"
               class="w-3.5 h-3.5 shrink-0 sm:w-4 sm:h-4"
               :title="t('setting.rsshub.feed')"
-              alt="RSSHub"
             />
           </template>
           <span class="whitespace-nowrap">{{ formatDateWithI18n(article.published_at) }}</span>

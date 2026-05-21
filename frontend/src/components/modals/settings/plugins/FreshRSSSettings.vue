@@ -5,7 +5,7 @@ import { PhLink, PhUser, PhKey, PhArrowClockwise, PhCloudCheck } from '@phosphor
 import type { SettingsData } from '@/types/settings';
 import { useAppStore } from '@/stores/app';
 import { NestedSettingsContainer, SubSettingItem, InputControl } from '@/components/settings';
-import freshrssIcon from '/assets/plugin_icons/freshrss.svg?url';
+import FreshRSSIcon from '@/components/icons/FreshRSSIcon.vue';
 
 const { t } = useI18n();
 const appStore = useAppStore();
@@ -179,10 +179,9 @@ function formatSyncTime(timeStr: string | null): string {
   <!-- Enable FreshRSS Sync -->
   <div class="setting-item">
     <div class="flex-1 flex items-center sm:items-start gap-2 sm:gap-3 min-w-0">
-      <img
-        :src="freshrssIcon"
-        alt="FreshRSS"
+      <FreshRSSIcon
         class="w-5 h-5 sm:w-6 sm:h-6 mt-0.5 shrink-0"
+        title="FreshRSS"
       />
       <div class="flex-1 min-w-0">
         <div class="font-medium mb-0 sm:mb-1 text-sm sm:text-base">

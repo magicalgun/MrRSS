@@ -1,0 +1,38 @@
+<script setup lang="ts">
+interface Props {
+  class?: string;
+}
+
+defineProps<Props>();
+</script>
+
+<template>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    xml:space="preserve"
+    viewBox="0 0 260 260"
+    :class="class"
+  >
+    <style>
+      .fr-st1 {
+        stroke-opacity: 0.3;
+        fill: none;
+        stroke: #0062be;
+        stroke-width: 24;
+      }
+    </style>
+    <circle cx="130" cy="130" r="33" style="fill: #0062be" />
+    <path
+      d="M14 130C14 65.9 65.9 14 130 14s116 51.9 116 116-51.9 116-116 116"
+      class="fr-st1"
+    />
+    <path
+      d="M56 130c0-40.9 33.1-74 74-74s74 33.1 74 74-33.1 74-74 74"
+      class="fr-st1"
+    />
+    <path
+      d="M130 14c64.1 0 116 51.9 116 116M130 56c40.9 0 74 33.1 74 74"
+      style="fill: none; stroke: #0062be; stroke-width: 24"
+    />
+  </svg>
+</template>

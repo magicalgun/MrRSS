@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import type { Feed } from '@/types/models';
 import type { DropPreview } from '@/composables/ui/useDragDrop';
 import SidebarFeed from './SidebarFeed.vue';
-import freshrssIcon from '/assets/plugin_icons/freshrss.svg?url';
+import FreshRSSIcon from '@/components/icons/FreshRSSIcon.vue';
 
 const { t } = useI18n();
 
@@ -233,12 +233,10 @@ function handleCaretClick() {
         {{ name }}
         <!-- FreshRSS indicator on category -->
         <!-- Only show if ALL feeds in this category are from FreshRSS -->
-        <img
+        <FreshRSSIcon
           v-if="isFreshRSSCategory"
-          :src="freshrssIcon"
           class="w-3.5 h-3.5 shrink-0"
           :title="t('setting.freshrss.syncedFeed')"
-          alt="FreshRSS"
         />
       </span>
       <span v-if="unreadCount > 0" class="unread-badge mr-1">{{ unreadCount }}</span>

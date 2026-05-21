@@ -10,6 +10,7 @@ import {
   InputControl,
   TipBox,
 } from '@/components/settings';
+import RSSHubIcon from '@/components/icons/RSSHubIcon.vue';
 
 const { t } = useI18n();
 const store = useAppStore();
@@ -92,10 +93,9 @@ async function testConnection() {
   <!-- Enable RSSHub -->
   <div class="setting-item">
     <div class="flex-1 flex items-center sm:items-start gap-2 sm:gap-3 min-w-0">
-      <img
-        src="/assets/plugin_icons/rsshub.svg"
-        alt="RSSHub"
+      <RSSHubIcon
         class="w-5 h-5 sm:w-6 sm:h-6 mt-0.5 shrink-0"
+        title="RSSHub"
       />
       <div class="flex-1 min-w-0">
         <div class="font-medium mb-0 sm:mb-1 text-sm sm:text-base">

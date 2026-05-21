@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { PhCaretDown, PhCaretRight } from '@phosphor-icons/vue';
+import RSSHubIcon from '@/components/icons/RSSHubIcon.vue';
 import type { Feed } from '@/types/models';
 import { useFeedForm } from '@/composables/feed/useFeedForm';
 import { useSettings } from '@/composables/core/useSettings';
@@ -303,7 +304,7 @@ const submitButtonText = computed(() => {
                 class="text-xs text-accent hover:underline mx-1 inline-flex items-center gap-1"
                 @click="insertRSSHubPrefix"
               >
-                <img src="/assets/plugin_icons/rsshub.svg" class="w-3 h-3" alt="RSSHub" />
+                <RSSHubIcon class="w-3 h-3" />
                 RSSHub
               </button>
             </template>
@@ -368,7 +369,7 @@ const submitButtonText = computed(() => {
                 class="text-xs text-accent hover:underline mx-1 inline-flex items-center gap-1"
                 @click="insertRSSHubPrefix"
               >
-                <img src="/assets/plugin_icons/rsshub.svg" class="w-3 h-3" alt="RSSHub" />
+                <RSSHubIcon class="w-3 h-3" />
                 RSSHub
               </button>
             </template>
@@ -453,7 +454,7 @@ const submitButtonText = computed(() => {
                 class="text-xs text-accent hover:underline mx-1 inline-flex items-center gap-1"
                 @click="insertRSSHubPrefix"
               >
-                <img src="/assets/plugin_icons/rsshub.svg" class="w-3 h-3" alt="RSSHub" />
+                <RSSHubIcon class="w-3 h-3" />
                 RSSHub
               </button>
             </template>
@@ -525,7 +526,7 @@ const submitButtonText = computed(() => {
                 class="text-xs text-accent hover:underline mx-1 inline-flex items-center gap-1"
                 @click="insertRSSHubPrefix"
               >
-                <img src="/assets/plugin_icons/rsshub.svg" class="w-3 h-3" alt="RSSHub" />
+                <RSSHubIcon class="w-3 h-3" />
                 RSSHub
               </button>
             </template>

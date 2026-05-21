@@ -9,6 +9,7 @@ import {
 } from '@phosphor-icons/vue';
 import type { Feed } from '@/types/models';
 import { useI18n } from 'vue-i18n';
+import RSSHubIcon from '@/components/icons/RSSHubIcon.vue';
 
 const { t } = useI18n();
 
@@ -133,12 +134,10 @@ function handleDragEnd() {
     <span class="truncate flex-1">{{ feed.title }}</span>
 
     <!-- RSSHub indicator -->
-    <img
+    <RSSHubIcon
       v-if="isRSSHubFeed(feed)"
-      src="/assets/plugin_icons/rsshub.svg"
       class="w-3.5 h-3.5 shrink-0"
       :title="t('setting.rsshub.feed')"
-      alt="RSSHub"
     />
     <PhImage
       v-if="feed.is_image_mode"
