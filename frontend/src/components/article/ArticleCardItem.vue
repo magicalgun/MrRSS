@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { PhEyeSlash, PhStar, PhClockCountdown } from '@phosphor-icons/vue';
@@ -7,6 +7,8 @@ import { formatDate as formatDateUtil } from '@/utils/date';
 import { getProxiedMediaUrl, isMediaCacheEnabled } from '@/utils/mediaProxy';
 import { useAppStore } from '@/stores/app';
 import { imageCache } from '@/utils/imageCache';
+import freshrssIcon from '/assets/plugin_icons/freshrss.svg?url';
+import rsshubIcon from '/assets/plugin_icons/rsshub.svg?url';
 
 interface Props {
   article: Article;
@@ -184,18 +186,18 @@ function handleImageError(event: Event) {
           />
           <PhStar v-if="article.is_favorite" :size="14" class="text-yellow-500" weight="fill" />
           <img
-            v-if="article.freshrss_item_id"
-            src="/assets/plugin_icons/freshrss.svg"
-            class="w-3.5 h-3.5"
-            :title="t('setting.freshrss.syncedFeed')"
-            alt="FreshRSS"
-          />
-          <img
             v-if="isRSSHubArticle"
-            src="/assets/plugin_icons/rsshub.svg"
+            :src="rsshubIcon"
             class="w-3.5 h-3.5"
             :title="t('setting.rsshub.feed')"
             alt="RSSHub"
+          />
+          <img
+            v-if="article.freshrss_item_id"
+            :src="freshrssIcon"
+            class="w-3.5 h-3.5"
+            :title="t('setting.freshrss.syncedFeed')"
+            alt="FreshRSS"
           />
         </div>
       </div>

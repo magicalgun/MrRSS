@@ -18,6 +18,7 @@ import {
   PhTag,
   PhWarningCircle,
 } from '@phosphor-icons/vue';
+import freshrssIcon from '/assets/plugin_icons/freshrss.svg?url';
 import type { Feed } from '@/types/models';
 import { formatRelativeTime } from '@/utils/date';
 import { SettingGroup, ButtonControl } from '@/components/settings';
@@ -548,7 +549,7 @@ function handleManageTags() {
               <!-- Feed Type Indicators -->
               <img
                 v-if="feed.is_freshrss_source"
-                src="/assets/plugin_icons/freshrss.svg"
+                :src="freshrssIcon"
                 class="w-4 h-4 sm:w-4 sm:h-4 shrink-0 inline"
                 :title="t('setting.freshrss.syncedFeed')"
                 alt="FreshRSS"
